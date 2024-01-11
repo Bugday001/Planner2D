@@ -1,4 +1,4 @@
-# SimplePlanner
+# Planner2D
 grid map, sensor
 
 ## TODO
@@ -8,7 +8,8 @@ grid map, sensor
 - [ ] 增加传感器范围显示，增加重规划
 - [X] 增加航向的规划
 
-
+**以下为原始项目**
+---
 # SimplePlanner
 
 Simple 2D implement of the paper "Planning Dynamically Feasible Trajectories for Quadrotors Using Safe Flight Corridors in 3-D Complex Environments".
