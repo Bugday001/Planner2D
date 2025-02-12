@@ -42,6 +42,7 @@ class BugPlanner:
         self.final_state_ = final_state
         self.state_machine_ = self.FIRST_PLAN
         self.uav_ = envUAV(self.globalMap_, self.cur_state_)
+        self.uav_.updateObstacle()  # 障碍物
         self.localPlannerWhile()
 
     def globalSearch(self, start_point, goal_point):
@@ -73,10 +74,20 @@ class BugPlanner:
         final_point = self.getPoint(self.final_state_)
         self.globalLine_ = self.globalSearch(cur_point, final_point)
         t = 0
-        obs_points = map1.obstacles  # uav.getObstacle()
-        decomp_polygons, piece_wise_trajectory = self.getTraj(self.cur_state_, self.final_state_, self.globalLine_,
-                                                              obs_points)
+        lastOptTime = 0
         while (final_point - cur_point).value() > 2:
+            delta_t = time.time() - lastOptTime
+            if delta_t > 0.5:
+                obs_points = self.uav_.getObstacle()  # map1.obstacles  #
+                try:
+                    localLine = self.globalSearch(cur_point, final_point)
+                    decomp_polygons, piece_wise_trajectory = self.getTraj(self.cur_state_, self.final_state_, localLine,
+                                                                          obs_points)
+                    t = 0
+                    lastOptTime = time.time()
+                except Exception as e:
+                    print(repr(e))
+
             start_time = time.time()
             x, y = piece_wise_trajectory.getPos(t)
             vx, vy = piece_wise_trajectory.getVel(t)
@@ -88,7 +99,7 @@ class BugPlanner:
             self.uav_.updateState(self.cur_state_)
             self.uav_.updateObstacle()  # 障碍物
             t += self.dt_
-            data2draw.updateDrawnData((decomp_polygons, self.globalLine_, self.cur_state_, obs_points, piece_wise_trajectory))
+            data2draw.updateDrawnData((decomp_polygons, localLine, self.cur_state_, obs_points, piece_wise_trajectory))
             time.sleep(self.dt_)
             print(time.time() - start_time)
         self.resetPlanner()
@@ -140,8 +151,8 @@ def loopTest():
 
 
 if __name__ == "__main__":
-    dt = 0.1
-    max_vel, max_acc = 4, 15
+    dt = 0.05
+    max_vel, max_acc = 2, 15
     params = Params(dt, max_vel, max_acc)
     map1 = envMap()
     map1.initMapFromImg()

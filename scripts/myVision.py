@@ -37,7 +37,7 @@ class drawVision:
         self.ax2.set_xlim(-1, 4)
         self.ax2.set_ylim(0, max(self.maxVel_Acc)+1)
         self.ax2.bar(self.barName, self.maxVel_Acc)
-        # 绘图元素,
+        # 绘图元素,scatter
         self.polygonAx1, = self.ax1.plot([], [], color="green")
         self.globalLineAx1, = self.ax1.plot([], [], "-o")
         self.localLineAx1, = self.ax1.plot([], [], color="black")

@@ -193,7 +193,7 @@ class TrajectoryOptimizer:
                                 (j_max / self.jerk_max_) ** (1 / 3))
                     time_allocations[n] = ratio * time_allocations[n]
                     condition_fit = False
-                    print(ratio, v_max, self.vel_max_)
+                    # print(ratio, v_max, self.vel_max_)
             if condition_fit:
                 break
         return piece_wise_trajectory
