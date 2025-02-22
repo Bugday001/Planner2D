@@ -187,8 +187,7 @@ class TrajectoryOptimizer:
                                 np.abs(piece_wise_trajectory.trajectory_segments_[n][0].thirdOrderDerivative(t_sample)),
                                 np.abs(piece_wise_trajectory.trajectory_segments_[n][1].thirdOrderDerivative(t_sample)))
                 # 判断是否满足约束条件
-                if Compare.large(v_max, self.vel_max_) or Compare.large(a_max, self.acc_max_) or Compare.large(j_max,
-                                                                                                               self.jerk_max_):
+                if Compare.large(v_max, self.vel_max_) or Compare.large(a_max, self.acc_max_) or Compare.large(j_max,        self.jerk_max_):
                     ratio = max(1, v_max / self.vel_max_, (a_max / self.acc_max_) ** 0.5,
                                 (j_max / self.jerk_max_) ** (1 / 3))
                     time_allocations[n] = ratio * time_allocations[n]
@@ -218,7 +217,7 @@ class TrajectoryOptimizer:
                             [10, -20, 10, 0, 0, 0],
                             [-10, 30, -30, 10, 0, 0],
                             [5, -20, 30, -20, 5, 0],
-                            [-1, 5, -10, 10, -5, 1]])  # 请实现getM函数
+                            [-1, 5, -10, 10, -5, 1]])
             if Q.shape[0] == 0:
                 Q = Q_k
                 M = M_k
@@ -346,43 +345,22 @@ class TrajectoryOptimizer:
         # 连接处的一阶导数相等
         for sigma in range(self.dim_):
             for n in range(segment_num - 1):
-                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 1] = 5 / \
-                                                                                                                    time_allocations[
-                                                                                                                        n]
-                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 2] = -5 / \
-                                                                                                                    time_allocations[
-                                                                                                                        n]
-                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_] = 5 / \
-                                                                                                      time_allocations[
-                                                                                                          n + 1]
-                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 1] = -5 / \
-                                                                                                          time_allocations[
-                                                                                                              n + 1]
+                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 1] = 5 / time_allocations[n]
+                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 2] = -5 / time_allocations[n]
+                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_] = 5 / time_allocations[n + 1]
+                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 1] = -5 / time_allocations[n + 1]
                 lb[constraints_index] = 0
                 ub[constraints_index] = 0
                 constraints_index += 1
         # 连接处的二阶导数相等
         for sigma in range(self.dim_):
             for n in range(segment_num - 1):
-                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 1] = 20 / \
-                                                                                                                    time_allocations[
-                                                                                                                        n] ** 2
-                A[constraints_index][
-                    sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 2] = -40 / \
-                                                                                                   time_allocations[
-                                                                                                       n] ** 2
-                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 3] = 20 / \
-                                                                                                                    time_allocations[
-                                                                                                                        n] ** 2
-                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_] = -20 / \
-                                                                                                      time_allocations[
-                                                                                                          n + 1] ** 2
-                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 1] = 40 / \
-                                                                                                          time_allocations[
-                                                                                                              n + 1] ** 2
-                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 2] = -20 / \
-                                                                                                          time_allocations[
-                                                                                                              n + 1] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 1] = 20 / time_allocations[n] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 2] = -40 /  time_allocations[n] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + n * self.freedom_ + self.freedom_ - 3] = 20 / time_allocations[n] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_] = -20 / time_allocations[   n + 1] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 1] = 40 / time_allocations[n + 1] ** 2
+                A[constraints_index][sigma * segment_num * self.freedom_ + (n + 1) * self.freedom_ + 2] = -20 / time_allocations[n + 1] ** 2
                 lb[constraints_index] = 0
                 ub[constraints_index] = 0
                 constraints_index += 1
